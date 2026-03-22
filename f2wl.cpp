@@ -7,7 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "cxxopts.hpp"
+#include "lib/cxxopts/include/cxxopts.hpp"
 using namespace std;
 
 static inline constexpr double c    = 299792458;
