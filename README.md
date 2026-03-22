@@ -6,6 +6,7 @@ clone the repo and
 
 ```bash$ copy
 cd calcplus
+git pull --recurse-submodules 
 make
 ```
 
