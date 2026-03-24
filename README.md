@@ -2,6 +2,8 @@
 Calculators and stuff in C++ for electronics, physic, ham radio, hifi, etc.
 
 ## build
+get all the prerequisites: `libconfig++-dev`
+
 clone the repo and
 
 ```bash$ copy

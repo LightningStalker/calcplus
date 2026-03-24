@@ -1,0 +1,13 @@
+// Thiele/Small Parameters of the woofer
+
+name = "Dayton RS180-4 (7\")"
+
+Thiele-Small_Parameters : 
+{
+  Vas  = 16.51
+  Qts  = 0.36
+  Qtc  = 0.707
+  Fs   = 33.0
+  Sd   = 148.0           // surface displacement / cone area
+  Xmax = 1.0
+};

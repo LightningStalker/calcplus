@@ -5,10 +5,12 @@ SUFFIX   := cpp
 BASENAME := basename
 ECHO     := /bin/echo
 RM       := rm
+STRIP    := strip -s
 TEST     := /bin/test
 XARGS    := xargs
 
 #CXXFLAGS    := -Wall
+LINKFLAGS   := -lconfig++
 BASENAMEOPT := -a -s .$(SUFFIX) -z
 ECHOPT      := -e -n
 ERRORMSG    := "Nothing to do!!"
@@ -28,11 +30,13 @@ NOSTUFFIX := $(BASENAME) $(BASENAMEOPT) $(STUFF)
 all: .cpp
 
 unconditional:
-	$(NOSUFFIX) | $(XARGSXE) $(CXX) $(CXXFLAGS) -o {} {}.$(SUFFIX)
+	$(NOSUFFIX) | $(XARGSXE) $(CXX) $(CXXFLAGS) -o {} {}.$(SUFFIX) $(LINKFLAGS)
+	$(NOSUFFIX) | $(XARGSXE) $(STRIP) {}
 
 .cpp:
 	@if [ -z "$(STUFF)" ]; then echo $(ERRORMSG); exit 1; fi
-	$(NOSTUFFIX) | $(XARGSXE) $(CXX) $(CXXFLAGS) -o {} {}.$(SUFFIX)
+	$(NOSTUFFIX) | $(XARGSXE) $(CXX) $(CXXFLAGS) -o {} {}.$(SUFFIX) $(LINKFLAGS)
+	$(NOSTUFFIX) | $(XARGSXE) $(STRIP) {}
 
 clean:
 	$(NOSUFFIX) | $(XARGSXE) $(RM) {}

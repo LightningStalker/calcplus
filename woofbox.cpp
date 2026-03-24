@@ -3,22 +3,20 @@
  * Project Crew™ 3/11/2026
  */
 
+#define PROGNAME    "woofbox"
+
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <cstring>
+#include <libconfig.h++>
 using namespace std;
+using namespace libconfig;
 
 /* I try{} using macro define constantes here, but some compiler bug
  *   multiply instead of divide.
  */
 static const float
-    Vas  = 16.51,
-    Qts  = 0.36,
-    Fs   = 33,
-    Qtc  = 0.707,
-    Xmax = 9,
-    Sd   = 148,               // surface displacement / cone area
-
     nP  = 2,                  // number ports
     Dp  = 5.0,                // port diameter (cm)
 
@@ -42,7 +40,7 @@ class fwf
         void
         fomrat()
         {
-            os.seekp(0);                // reset
+            os.seekp(ios_base::beg);                // reset
             os << setw(6) << bd_;
         }
 
@@ -51,7 +49,7 @@ class fwf
         {
             os << fixed << setprecision(1);
         }
-
+        
         string
         cm(float bd)
         {
@@ -69,6 +67,15 @@ class fwf
         }
 };
 
+string
+param(float f)
+{
+    ostringstream os;
+    
+    os << fixed << setprecision(3) << f;
+    return os.str();
+}  
+
 /* volume to height/width/depth dimension */
 void
 vol2dim(float* Vb, float* cd, float* w, float* h, float* d)
@@ -80,13 +87,85 @@ vol2dim(float* Vb, float* cd, float* w, float* h, float* d)
     *d   = *w * R3;
 }
 
+void
+usage()
+{
+    cerr << endl
+         << "  " PROGNAME" is a woofer/subwoofer Thiele/Small Box Alignment"
+            " calculator." << endl
+         << "    I will tell you the ideal box size for the woofer." << endl
+         << endl
+         << "  use me like that:  $ " PROGNAME" [WOOFER CONFIG FILE]" << endl
+         << "    default is `woofbox.cfg` in current directory" << endl
+         << endl
+         << "  see `woofbox.cfg.template`" << endl
+         << endl;
+    exit(EXIT_FAILURE);
+}
+
 
 int
 main(int argc, char* argv[])
 {
-    float Vb, Fb, cd, w, h, d;
+    float Vb, Fb, cd, w, h, d,
+          Vas  = 1.0,
+          Qts  = 1.0,
+          Qtc  = 1.0,
+          Fs   = 1.0,
+          Sd   = 1.0,
+          Xmax = 1.0;
+    string name;
+    Config cfg;
     fwf fwf;
 
+    char file[256] = PROGNAME".cfg";
+    if(argc == 2)
+    {
+        strncpy(file, argv[1], 256);
+    }
+
+// Read the config file. If there is an error, report it and exit.
+    try
+    {
+        cfg.readFile(file);
+    }catch(const FileIOException &fioex)
+    {
+        cerr << "I/O error while reading " << file << endl;
+        usage();
+    }catch(const ParseException &pex)
+    {
+        cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
+        << " - " << pex.getError() << endl;
+        return(EXIT_FAILURE);
+    }
+
+        const Setting& root = cfg.getRoot();
+
+// Get thy Thiele/Small Parameters.
+    try
+    {
+        name = (string)root.lookup("name");
+        const Setting &param = root["Thiele-Small_Parameters"];
+        Vas  = param.lookup("Vas");
+        Qts  = param.lookup("Qts");
+        Qtc  = param.lookup("Qtc");
+        Fs   = param.lookup("Fs");
+        Sd   = param.lookup("Sd");
+        Xmax = param.lookup("Xmax");
+    }catch(const SettingNotFoundException &nfex)
+    {
+        cerr << nfex.getPath() << " Setting is missing in " << root.getSourceFile() << endl;
+    }
+
+    cout << "   woofer: "  << name << endl
+         << " Vas = " << param(Vas)
+         << ", Qts = " << param(Qts)
+         << ", Qtc = " << param(Qtc)
+         << ", Fs = " << param(Fs)
+         << ", Sd = " << param(Sd)
+         << ", Xmax = " << param(Xmax) << endl
+         << endl;
+    
 /* sealed */
     Vb = Vas / ( powf(Qtc / Qts, 2) - 1 );        // volume box
     Fb = Fs * (Qtc / Qts);                        // frequency ..
