@@ -9,7 +9,7 @@ STRIP    := strip -s
 TEST     := /bin/test
 XARGS    := xargs
 
-#CXXFLAGS    := -Wall
+CXXFLAGS    := -Os #-Wall
 LINKFLAGS   := -lconfig++
 BASENAMEOPT := -a -s .$(SUFFIX) -z
 ECHOPT      := -e -n
