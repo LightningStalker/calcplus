@@ -17,9 +17,6 @@ using namespace libconfig;
  *   multiply instead of divide.
  */
 static const float
-    nP  = 2,                  // number ports
-    Dp  = 5.0,                // port diameter (cm)
-
     c   = 34300,              // speed of sound @ 20°C (cm/s)
 /* box dimensions ratio 1:1.2:1.5
  * polynomial eq: Vb = (1.5x * 1.2x * x) = (x³ * 1.5 * 1.2) = (1.8 * x³)
@@ -49,7 +46,7 @@ class fwf
         {
             os << fixed << setprecision(1);
         }
-        
+
         string
         cm(float bd)
         {
@@ -71,10 +68,10 @@ string
 param(float f)
 {
     ostringstream os;
-    
+
     os << fixed << setprecision(3) << f;
     return os.str();
-}  
+}
 
 /* volume to height/width/depth dimension */
 void
@@ -103,7 +100,7 @@ usage()
     exit(EXIT_FAILURE);
 }
 
-
+/* Bass Hit - Woofercooker */
 int
 main(int argc, char* argv[])
 {
@@ -113,7 +110,11 @@ main(int argc, char* argv[])
           Qtc  = 1.0,
           Fs   = 1.0,
           Sd   = 1.0,
-          Xmax = 1.0;
+          Xmax = 1.0,
+          nP   = 1.0,
+          dP   = 1.0,
+          Wth  = 1.0;
+
     string name;
     Config cfg;
     fwf fwf;
@@ -145,37 +146,56 @@ main(int argc, char* argv[])
     try
     {
         name = (string)root.lookup("name");
-        const Setting &param = root["Thiele-Small_Parameters"];
-        Vas  = param.lookup("Vas");
-        Qts  = param.lookup("Qts");
-        Qtc  = param.lookup("Qtc");
-        Fs   = param.lookup("Fs");
-        Sd   = param.lookup("Sd");
-        Xmax = param.lookup("Xmax");
+        const Setting &tsparam = root["Thiele-Small_Parameters"];
+        Vas  = tsparam.lookup("Vas");
+        Qts  = tsparam.lookup("Qts");
+        Qtc  = tsparam.lookup("Qtc");
+        Fs   = tsparam.lookup("Fs");
+        Sd   = tsparam.lookup("Sd");
+        Xmax = tsparam.lookup("Xmax");
+        const Setting &sysparam = root["System_Parameters"];
+        nP   = floor((float)sysparam.lookup("nP"));
+        dP   = sysparam.lookup("dP");
+        Wth  = sysparam.lookup("Wth");
     }catch(const SettingNotFoundException &nfex)
     {
         cerr << nfex.getPath() << " Setting is missing in " << root.getSourceFile() << endl;
+    }catch(const SettingTypeException &tex)
+    {
+        cerr << tex.getPath() << " Setting is wrong type in "
+             << root.getSourceFile() << "\n  Did you use decimal point?" << endl;
+        return(EXIT_FAILURE);
     }
 
-    cout << "   woofer: "  << name << endl
-         << " Vas = " << param(Vas)
-         << ", Qts = " << param(Qts)
-         << ", Qtc = " << param(Qtc)
-         << ", Fs = " << param(Fs)
-         << ", Sd = " << param(Sd)
-         << ", Xmax = " << param(Xmax) << endl
+    cout << "   Input config of woofer:  "  << name << endl
+         << " Vas = "   << param(Vas) << "L"
+         << ", Qts = "  << param(Qts)
+         << ", Qtc = "  << param(Qtc)
+         << ", Fs = "   << param(Fs) << endl
+         << "  Sd = "   << param(Sd)
+         << ", Xmax = " << param(Xmax)
+         << ", nP = "   << nP
+         << ", dP = "   << param(dP) << "cm"
+         << ", Wth = "  << param(Wth) << "cm" << endl
          << endl;
-    
+
 /* sealed */
     Vb = Vas / ( powf(Qtc / Qts, 2) - 1 );        // volume box
     Fb = Fs * (Qtc / Qts);                        // frequency ..
+    float Qtc_a = Qts * sqrtf(1 + Vas / Vb);
     vol2dim(&Vb, &cd, &w, &h, &d);
 
     cout << fixed << setprecision(1);
-    cout << "   box type: Sealed" << endl
+    cout << "   box type: Sealed";
+    if(Qts >= 0.4 && Qts < 0.7)
+        cout << "  0.4 < Qts < 0.7 this woofer is good for the sealed box";
+    else if(Qts >= 0.7)
+        cout << "  large box, Qts > 0.7, maybe mount free air.";
+    cout << endl
          << " volume: " << Vb << "L,  "
-         << " cube size: " << cd << "cm,  "
-         << " -3dB cutoff freq.: " << Fb << "Hz" << endl
+         << " cube size: " << cd << "cm/side,  "
+         << " system resonance freq.: " << Fb << "Hz" << endl
+         << " system Q: " << setprecision(3) << Qtc_a << endl
          << endl;
     cout << " internal dimensions of 1:1.2:1.5 ratio:" << endl;
     cout << fwf.cm(w) << "W  x "
@@ -191,24 +211,27 @@ main(int argc, char* argv[])
 
     Vb   = Vas * powf(Qts / 0.383, 3);
     Fb   = Fs * (0.383 / Qts);            // port tuning frequency
-    Ap   = M_PI * powf(Dp / 2.0, 2) * nP; // total port area
+    Ap   = M_PI * powf(dP / 2.0, 2) * nP; // total port area
     /* length vent */
-    Lv   = powf(c / (2.0 * M_PI * Fb), 2) * Ap / (Vb * 1000) - 0.732 * Dp;
-    Vd   = Sd * (Xmax / 10) * nP;         // volume displacement
+    Lv   = powf(c / (2.0 * M_PI * Fb), 2) * Ap / (Vb * 1000) - 0.732 * dP;
+    Vd   = Sd * (Xmax / 10);              // volume displacement / 2
     Pv   = Vd * 2.0 * M_PI * Fb / Ap / 100.0;     // max speed the air
 
     vol2dim(&Vb, &cd, &w, &h, &d);
 
     cout << "\n\n"
-         << "   box type: Vented/Ported" << endl
+         << "   box type: Vented/Ported";
+    if(Qts < 0.4)
+        cout << "  Qts < 0.4 this woofer is better for vented box";
+    cout << endl
          << " volume: " << Vb << "L,  "
-         << " cube size: " << cd << "cm,  "
-         << " -3dB cutoff freq.: " << Fb << "Hz" << endl
-         << " number of ports: " << (int)nP << ",  "
-         << " diameter of ports: " << Dp << "cm,  "
-         << " length of ports: " << Lv << "cm" << endl
-         << " ports total area: " << Ap << "cm³" << endl
-         << " speaker displacement vol: " << Vd << "cm³,  "
+         << " cube size: " << cd << "cm/side,  "
+         << " port tuning freq.: " << Fb << "Hz" << endl
+         << " num. / ports: " << (int)nP << ",  "
+         << " diameter of ports: " << dP << "cm,  "
+         << " length each port: " << Lv << "cm" << endl
+         << " ports total surface area: " << Ap << "cm\u00b2" << endl
+         << " speaker displacement vol: " << Vd * 2 << "cm\u00b3,  "
          << " speed air in the port: " << Pv << "m/s" << endl
          << endl;
     cout << " internal dimensions of 1:1.2:1.5 ratio:" << endl;
@@ -218,5 +241,8 @@ main(int argc, char* argv[])
 
     cout << fwf.inch(w) << "W  x "
          << fwf.inch(h) << "H  x "
-         << fwf.inch(d) << "D (in)" << endl;
+         << fwf.inch(d) << "D (in)" << endl
+         << endl;
+
+    //cout << "sent cut sheet to file: woofboxcuts.txt" << endl;
 }

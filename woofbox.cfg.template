@@ -1,13 +1,22 @@
-// Thiele/Small Parameters of the woofer
+// Thiele/Small Parameters from woofer specication sheet
 
 name = "Dayton RS180-4 (7\")"
 
 Thiele-Small_Parameters : 
 {
-  Vas  = 16.51
-  Qts  = 0.36
-  Qtc  = 0.707
-  Fs   = 33.0
-  Sd   = 148.0           // surface displacement / cone area
-  Xmax = 1.0
+  Vas  = 16.5       // in Litres, or take cubic ft * 28.316847
+  Qts  = 0.36       // Q factor the woofer
+  Qtc  = 0.707      // target Q, leave it alone unless you want the adventure
+  Fs   = 33.0       // speaker natural resonance
+  Sd   = 148.0      // surface displacement / cone area in cubic cm
+  Xmax = 9.0        // cone excursion in mm
 };
+
+// Decide what you want for the box
+
+System_Parameters :
+{
+  nP  = 2.0         // number of ports/slots
+  dP  = 5.0         // port diameter (cm)
+  Wth = 18.0        // material thickness, box wall thickness
+}
