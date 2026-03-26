@@ -54,7 +54,7 @@ class out
         void
         format()
         {
-            os.seekp(0);                // reset
+            os.seekp(ios_base::beg);    // reset
             os << setw(w);
         }
 
@@ -75,7 +75,7 @@ class out
 
             ft      = floorf(dft);
             in      = (dft - ft) * 12;
-            frac    = round((in - floorf(in)) * 32);
+            frac    = roundf((in - floorf(in)) * 32);
             if(frac == 0)
             {
                 fractz = nu = de = 0;

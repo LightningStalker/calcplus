@@ -18,5 +18,5 @@ System_Parameters :
 {
   nP  = 2.0         // number of ports/slots
   dP  = 5.0         // port diameter (cm)
-  Wth = 18.0        // material thickness, box wall thickness
+  Wth = 18.0        // thickness of your board, convert to millimeters
 }
