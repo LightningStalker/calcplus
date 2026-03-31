@@ -24,6 +24,7 @@ use the Cygwin, you probably don't need me to hole you hand.
   f2wl       - frequency <-> wavelength
   pi         - 3.14
   tankfreq   - resonance frequency of the thank circuit
+  pinh       - pinhole camera lens
   primes     - prime numbers
   beacondist - distance to transmitter base on the RSSI
   woofbox    - Thiele/Small subwoofer box
