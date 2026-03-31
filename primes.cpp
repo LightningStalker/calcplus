@@ -1,40 +1,49 @@
+#define PROGNAME    "primes"
+
 #include <iostream>
 using namespace std;
 
 int
 main(int argc, char * argv[])
 {
-    int i, Number, max, count = 0;
+    int max, Number, i, count = 0;
 
-    if (argc < 2)
+    if(argc < 2)
     {
-        cout << "I need a max number" << endl;
-        cout << "like this  $ " << argv[0] << " 123" << endl;
-        return 1;
+        cerr << endl
+             << "  I need a max number" << endl
+             << "  like this:  $ " << PROGNAME << " 123" << endl
+             << endl;
+        return EXIT_FAILURE;
     }
 
     max = atoi(argv[1]);
 
-    for (Number = 2; Number <= max; Number++)
-    {
-        for (i = 2; i <= Number / 2; i++)
+    if(max < 1)
         {
-            if (Number % i == 0)
+            cerr << "think positive" << endl;
+            return EXIT_FAILURE;
+        }
+
+    cout << "1, ";
+    for(Number = 2; Number <= max; Number++)
+    {
+        for(i = 2; i <= Number / 2; i++)
+        {
+            if(Number % i == 0)
             {
                 count++;
                 break;
             }
         }
-        if (count == 0 && Number != 1)
+        if(!count)
         {
             cout << Number << ", ";
-        }
-        //else
+        }/*else
         {
-            //cout << Number << " is Not" << endl;
-        }
+            cout << Number << " is Not" << endl;
+        }*/
         count = 0;
     }
     cout << "max reached" << endl;
-    return 0;
 }

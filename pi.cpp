@@ -25,18 +25,18 @@ using namespace std;
 class Nilakantha
 {
     private:
-    
+
     _Float128 sum = 0;
     _Float128 temp = 0;
     _Float128 a = 2, b = 3, c = 4;
 
     public:
-    
+
     _Float128
     GetPI(int n)
     {
         int i;
-        
+
         for (i = 0; i < n; i++)
         {
             temp = 4.0Q / (a * b * c);
@@ -71,7 +71,7 @@ strnlenpp(_Float128 PI)
 {
     long unsigned int t;  // since .length() returns size_type
     string stringling;
-    
+
     //how many digits found so far?
     stringling = stringeyes(PI);
     for(t = 2; t <= stringling.length(); t++)
@@ -123,11 +123,10 @@ main(int argc, char * argv[])
     cout << endl << string(PIlen, ' ') << " v" << endl;
     print(3 + myPI);
     cout << " 🡨 (this run)" << endl;
-    //print(M_PIl);    
+    //print(M_PIl);
     //cout << endl;
     cout << STRINGIZE(M_PIl) << "\b 🡨 (precalc-ulated ref. value)" << endl; //<< "  ";
     //print(((_Float128) M_PIl - 3.0Q) * 1e36Q);
     //cout << endl;
     //cout << fixed << ' ' << truncf128(M_PIl * 1e36L) << endl;
 }
-    

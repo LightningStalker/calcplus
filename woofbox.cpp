@@ -57,9 +57,9 @@ class fwf
         {
             if (x == 0)
                 return(32);
-        
+
             int n = 1;
-        
+
             if ((x & 0xF) == 0)
             {
                 n = n  + 4;
@@ -72,7 +72,7 @@ class fwf
             }
             return n - (x & 1);
         }
-    
+
 
     public:
         fwf()                           // initial
@@ -103,7 +103,7 @@ class fwf
             fomrat();
             return os.str();
         }
-        
+
         string                          // inch format
         infs(float din)
         {
@@ -272,7 +272,7 @@ main(int argc, char* argv[])
           << endl
           << "   box type: Sealed" << endl
           << " internal dimensions of 1:1.2:1.5 ratio:" << endl
-          
+
           << fwf.cm(w) << "W  x "
           << fwf.cm(h) << "H  x "
           << fwf.cm(d) << "D (cm)" << endl
@@ -340,11 +340,11 @@ main(int argc, char* argv[])
           << "   box type: Vented/Ported"
           << endl
           << " internal dimensions of 1:1.2:1.5 ratio:" << endl
-          
+
           << fwf.cm(w) << "W  x "
           << fwf.cm(h) << "H  x "
           << fwf.cm(d) << "D (cm)" << endl
-          
+
           << fwf.inch(w) << "W  x "
           << fwf.inch(h) << "H  x "
           << fwf.inch(d) << "D (in)" << endl
@@ -372,4 +372,3 @@ main(int argc, char* argv[])
           << fwf.infs(h) << "\" (in)" << endl;
     cout  << "   Sent cut sheet to file: " << cutfile << endl;
 }
-                 

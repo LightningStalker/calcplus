@@ -65,7 +65,7 @@ class out
             os << setprecision(prec) << f;
             return os.str();
         }
-        
+
         string                          // inch format
         infs(float dft)
         {
@@ -94,7 +94,7 @@ class out
                << setw(2)  << de << "in";
             return os.str();
         }
-        
+
     public:
         out()                           // initial
         {
@@ -133,7 +133,7 @@ class out
         {
             float dft;
             dft     = result;
-    
+
             cout << endl
                  << "    1\u03bb = " << infs(dft)  << endl
                  << "   \u03bb/2 = " << infs(dft / 2) << endl
