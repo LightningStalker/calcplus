@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cmath>
+#include <algorithm>
 #include <cstring>
 #include <libconfig.h++>
 using namespace std;
@@ -257,9 +258,9 @@ main(int argc, char* argv[])
 
     cout << fixed << setprecision(1);
     cout << "   box type: Sealed";
-    if(Qts >= 0.4 && Qts < 0.7)
+    if(Qts == clamp(Qts, 0.4f, 0.7f))
         cout << "  0.4 < Qts < 0.7 this woofer is good for the sealed box";
-    else if(Qts >= 0.7)
+    else if(Qts > 0.7)
         cout << "  * LARGE BOX! *, Qts > 0.7, maybe mount free air.";
     cout << endl
          << " volume: " << Vb << "L,  "

@@ -246,7 +246,7 @@ main(int argc, char* argv[])
         usage(help);
     }else if(vf < 100)
     {
-        cout << "  @ " << vf << "% velocity:" << endl;
+        cout << "  @ " << setprecision(2) << vf << "% velocity:" << endl;
     }else
     {
         cout << ':' << endl;
